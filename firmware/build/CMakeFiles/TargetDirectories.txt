@@ -1,0 +1,6 @@
+/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/rebuild_cache.dir
+/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/hex.dir
+/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/eeprom.dir
+/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/firmware.dir
+/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/edit_cache.dir
+/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/strip.dir
