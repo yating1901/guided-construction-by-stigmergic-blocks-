@@ -395,8 +395,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       for(uint8_t un_BitIndex=0; un_BitIndex<6; un_BitIndex++){   //R,F,L,P,T,B.. Post order;
          for(SFace& s_face : Faces){  
             if( un_DirectedFaces[un_BitIndex] == static_cast<uint8_t>(s_face.Controller.Port)){
-               if(!s_face.RxTargetFunctor.IsParent && s_face.RxInitiatorFunctor.HasChild) {   
-
+               if(s_face.RxInitiatorFunctor.HasChild) {   
                   un_FaceConnectedState|= 1<<un_BitIndex;
                   for(uint8_t un_index=0;un_index<s_face.RxInitiatorFunctor.un_NumTreeInfo;un_index++){
                      un_TxBlockNodeBuffer[un_NumTreeInfo++]=s_face.RxInitiatorFunctor.m_punRxBuffer[un_index]; 
@@ -408,14 +407,15 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
          }
       }
       un_TxBlockNodeBuffer[un_NumTreeInfo++]=un_FaceConnectedState; //the state of Child;
-
-      for(SFace& s_face : Faces){
-         if(s_face.RxTargetFunctor.IsParent){   //Response except root blcok 
-            s_face.TxTargetFunctor.Message='R';
-            s_face.TxTargetFunctor.un_NumTreeInfo=un_NumTreeInfo;  //un_NumTreeInfo =starts from 0, Number of Info in the array, not index;
-            s_face.TxTargetFunctor.pun_TxBuffer=un_pTxBuffer;
-         }
-      }  
+      if(!IsRoot){                                 //Root block should response from the top face, because it has fake parent face;
+         for(SFace& s_face : Faces){
+            if(s_face.RxTargetFunctor.IsParent){   //Response except root blcok 
+               s_face.TxTargetFunctor.Message='R';
+               s_face.TxTargetFunctor.un_NumTreeInfo=un_NumTreeInfo;  //un_NumTreeInfo =starts from 0, Number of Info in the array, not index;
+               s_face.TxTargetFunctor.pun_TxBuffer=un_pTxBuffer;
+            }
+         }  
+      }
       return un_NumTreeInfo;
    }
    
