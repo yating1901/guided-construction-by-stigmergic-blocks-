@@ -516,7 +516,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
    uint8_t un_ParentFace=static_cast<uint8_t>(CPortController::EPort::Disconnect);
    uint8_t un_DirectedFaces[6]={8};  //Right=0,Front,Left,Parent,Top,Bottom,Disconnect=8;
 
-   uint8_t un_RootedTree[6]={3,2,3,0,0,0}; 
+   uint8_t un_RootedTree[5]={15,0,0,0,0}; 
    uint8_t un_index=0;
    /***********************************************************/
    /***********************************************************/
@@ -528,7 +528,8 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       {  case EBlockState::Idle:
             if(IsRoot){
                un_ParentFace=static_cast<uint8_t>(CPortController::EPort::West);
-               un_NumTreeInfo=sizeof(un_RootedTree);
+               //un_ParentFace = un_TopFaceIndex;
+               un_NumTreeInfo = sizeof(un_RootedTree);
                SetDirectedFaces(un_ParentFace,un_TopFaceIndex);
                DecomposeRootedTree(un_RootedTree,un_NumTreeInfo); //only root block apply rooted tree;
                m_eBlockState=EBlockState::Query; 
@@ -544,8 +545,16 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
             }
             break;
          case EBlockState::Query:
-            for(SFace& s_face : Faces){
-               if(!s_face.RxTargetFunctor.IsParent){
+            if(!IsRoot){
+               for(SFace& s_face : Faces){
+                  if(!s_face.RxTargetFunctor.IsParent){
+                     s_face.TxInitiatorFunctor.Message='Q';
+                     s_face.Controller.NFC.SetInitiatorPolicy(CNFCController::EInitiatorPolicy::Once);
+                  }
+               }
+            }
+            else{
+               for(SFace& s_face : Faces){
                   s_face.TxInitiatorFunctor.Message='Q';
                   s_face.Controller.NFC.SetInitiatorPolicy(CNFCController::EInitiatorPolicy::Once);
                }
@@ -558,11 +567,11 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                   for(uint8_t un_TreeIndex=0;un_TreeIndex<un_NumTreeInfo;un_TreeIndex++){
                      IsCompleted = IsCompleted && (un_RootedTree[un_TreeIndex]==un_TxBlockNodeBuffer[un_NumChildInfo-un_TreeIndex-1]);
                   }
-                  //if(IsCompleted){
-                     //for(SFace& s_face : Faces){ 
-                        //LightenBlueOnFace(static_cast<uint8_t>(s_face.Controller.Port));
-                     //}
-                  //}  
+                  if(IsCompleted){
+                     for(SFace& s_face : Faces){ 
+                        LightenBlueOnFace(static_cast<uint8_t>(s_face.Controller.Port));
+                     }
+                  }  
                }
             }
             break;
