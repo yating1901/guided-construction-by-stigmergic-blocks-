@@ -416,6 +416,15 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
             }
          }  
       }
+      else{
+         for(SFace& s_face : Faces){
+            if(CPortController::PortToChar(s_face.Controller.Port) == 'T'){   // root blcok reponses from the top face
+               s_face.TxTargetFunctor.Message='R';
+               s_face.TxTargetFunctor.un_NumTreeInfo=un_NumTreeInfo;  //un_NumTreeInfo =starts from 0, Number of Info in the array, not index;
+               s_face.TxTargetFunctor.pun_TxBuffer=un_pTxBuffer;
+            }
+         }  
+      }
       return un_NumTreeInfo;
    }
    
@@ -499,17 +508,28 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       }
       return un_NumTreeInfo;
    }
-
+    /***********************************************************/
+   /***********************************************************/
+   void CompareBranchLength(){
+      uint8_t un_NumTreeInfo=0;
+      for(SFace& s_face : Faces){  //N,E,S,W natural order;
+         if(s_face.RxTargetFunctor.IsParent){
+            un_NumTreeInfo=s_face.RxTargetFunctor.un_NumTreeInfo;
+            for(uint8_t un_index=0;un_index<un_NumTreeInfo;un_index++){
+               un_ResBlockNodeBuffer[un_index]=s_face.RxTargetFunctor.m_punRxBuffer[un_index]; 
+            }
+         }
+      }
+   }
    /***********************************************************/
    /***********************************************************/
    uint8_t un_ResBlockNodeBuffer[10]={0};
-   uint8_t un_NumTreeInfo=0;
    uint8_t un_TxBlockNodeBuffer[10]={0};
    uint8_t un_NumChildInfo=0;
    uint8_t un_BlockIndex=0;
    uint32_t LastQuerystamp= 0;
    uint32_t LastResponsestamp= 0;
-   bool IsRoot = true;
+   bool IsRoot = false;
    EBlockState m_eBlockState=EBlockState::Idle;
 
    uint8_t un_TopFaceIndex=8;
@@ -517,6 +537,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
    uint8_t un_DirectedFaces[6]={8};  //Right=0,Front,Left,Parent,Top,Bottom,Disconnect=8;
 
    uint8_t un_RootedTree[5]={15,0,0,0,0}; 
+   uint8_t un_NumTreeInfo=0;
    uint8_t un_index=0;
    /***********************************************************/
    /***********************************************************/
@@ -534,13 +555,15 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                DecomposeRootedTree(un_RootedTree,un_NumTreeInfo); //only root block apply rooted tree;
                m_eBlockState=EBlockState::Query; 
             }
-            for(SFace& s_face : Faces){
-               if(s_face.RxTargetFunctor.IsParent){
-                  un_ParentFace=static_cast<uint8_t>(s_face.Controller.Port);
-                  SetDirectedFaces(un_ParentFace,un_TopFaceIndex);
-                  un_NumTreeInfo=PackResChildInfo(un_ResBlockNodeBuffer);//store command in un_ResBlockNodeBuffer;
-                  DecomposeRootedTree(un_ResBlockNodeBuffer,un_NumTreeInfo);
-                  m_eBlockState=EBlockState::Query;
+            else{
+               for(SFace& s_face : Faces){
+                  if(s_face.RxTargetFunctor.IsParent){
+                     un_ParentFace=static_cast<uint8_t>(s_face.Controller.Port);
+                     SetDirectedFaces(un_ParentFace,un_TopFaceIndex);
+                     un_NumTreeInfo=PackResChildInfo(un_ResBlockNodeBuffer);//store command in un_ResBlockNodeBuffer;
+                     DecomposeRootedTree(un_ResBlockNodeBuffer,un_NumTreeInfo);
+                     m_eBlockState=EBlockState::Query;
+                  }
                }
             }
             break;
@@ -555,13 +578,13 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
             }
             else{
                for(SFace& s_face : Faces){
-                  s_face.TxInitiatorFunctor.Message='Q';
-                  s_face.Controller.NFC.SetInitiatorPolicy(CNFCController::EInitiatorPolicy::Once);
+                  if(CPortController::PortToChar(s_face.Controller.Port) != 'T'){      //suppose top face is the parent face of root block
+                     s_face.TxInitiatorFunctor.Message='Q';
+                     s_face.Controller.NFC.SetInitiatorPolicy(CNFCController::EInitiatorPolicy::Once);
+                  }
                }
             }
             un_NumChildInfo=PackResBlockInfo(un_TxBlockNodeBuffer);//send state from un_TxBlockNodeBuffer;
-            //Reset(); //only reset parent face Info;
-            m_eBlockState=EBlockState::Idle;
             if(IsRoot){
                if(un_NumChildInfo==un_NumTreeInfo){
                   for(uint8_t un_TreeIndex=0;un_TreeIndex<un_NumTreeInfo;un_TreeIndex++){
@@ -571,6 +594,9 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                      for(SFace& s_face : Faces){ 
                         LightenBlueOnFace(static_cast<uint8_t>(s_face.Controller.Port));
                      }
+
+                     m_eBlockState=EBlockState::Idle;
+                     //Reset(); //only reset parent face Info;
                   }  
                }
             }
@@ -578,7 +604,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
          default:
             break;
       }  
-      
+     
       if(un_timestamp - LastMessageTimestamp > 1000) {
          CHUARTController::GetInstance().Print("[%05lu] ", un_timestamp);
          CHUARTController::GetInstance().Print("%u", static_cast<uint8_t>(m_eBlockState));
