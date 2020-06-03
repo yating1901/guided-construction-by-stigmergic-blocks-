@@ -500,15 +500,11 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
    }
     /***********************************************************/
    /*****************Post-Order*********************************/
-   void CountArmLength(){
-      uint8_t un_NumTreeInfo=0;
-      for(SFace& s_face : Faces){  //N,E,S,W natural order;
-         if(s_face.RxTargetFunctor.IsParent){
-            un_NumTreeInfo=s_face.RxTargetFunctor.un_NumTreeInfo;
-            for(uint8_t un_index=0;un_index<un_NumTreeInfo;un_index++){
-               un_ResBlockNodeBuffer[un_index]=s_face.RxTargetFunctor.m_punRxBuffer[un_index]; 
-            }
-         }
+   void CountArmLength(uint8_t* un_ArmLength){
+      uint8_t un_FaceIndex = 0;
+      for(SFace& s_face : Faces){  //N,E,S,W,T,B;
+         un_FaceIndex = static_cast<uint8_t>(s_face.Controller.Port);
+         un_ArmLength[un_FaceIndex] = s_face.RxInitiatorFunctor.un_NumTreeInfo;
       }
    }
    /***********************************************************/
@@ -525,7 +521,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
    uint8_t un_TopFaceIndex=8;
    uint8_t un_ParentFace=static_cast<uint8_t>(CPortController::EPort::Disconnect);
    uint8_t un_DirectedFaces[6]={8};  //Right=0,Front,Left,Parent,Top,Bottom,Disconnect=8;
-   uint8_t un_ArmLength[6]={0};      //North=0,East,South,West,Bottom,Top=5;
+   uint8_t un_ArmLength[6]={0};      //North=0,East,South,West,Top,Bottom=5;
 
    uint8_t un_RootedTree[5]={15,0,0,0,0}; 
    uint8_t un_NumTreeInfo=0;
@@ -586,7 +582,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                      for(SFace& s_face : Faces){ 
                         LightenBlueOnFace(static_cast<uint8_t>(s_face.Controller.Port));
                      }
-                     CountArmLength();
+                     CountArmLength(un_ArmLength);
                      m_eBlockState=EBlockState::Idle;
                      //Reset(); //only reset parent face Info;
                   }  
@@ -664,6 +660,12 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                   CHUARTController::GetInstance().Print("%c: %5s ", CPortController::PortToChar(s_face.Controller.Port), pchBuffer);           
                }
                CHUARTController::GetInstance().Print("\r\n");
+               break;
+            case '7':
+               for(uint8_t un_FaceIndex=0;un_FaceIndex<6;un_FaceIndex++){
+                  CHUARTController::GetInstance().Print(FONT_BOLD "%s: %d ",'L', un_ArmLength[un_FaceIndex]);
+               }
+               CHUARTController::GetInstance().Print(FONT_NORMAL "\r\n");
                break;
             case 'Q':
                CHUARTController::GetInstance().Print(FONT_BOLD "%c ",'Q');  
