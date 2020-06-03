@@ -498,14 +498,20 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       }
       return un_NumTreeInfo;
    }
-    /***********************************************************/
+   /************************************************************/
    /*****************Post-Order*********************************/
    void CountArmLength(uint8_t* un_ArmLength){
       uint8_t un_FaceIndex = 0;
+      uint8_t un_SumofChildren = 0;
       for(SFace& s_face : Faces){  //N,E,S,W,T,B;
          un_FaceIndex = static_cast<uint8_t>(s_face.Controller.Port);
          un_ArmLength[un_FaceIndex] = s_face.RxInitiatorFunctor.un_NumTreeInfo;
+         un_SumofChildren = un_SumofChildren + un_ArmLength[un_FaceIndex]；
       }
+      if( mode(un_SumofChildren,2) != 0){
+
+      }
+
    }
    /***********************************************************/
    /***********************************************************/
