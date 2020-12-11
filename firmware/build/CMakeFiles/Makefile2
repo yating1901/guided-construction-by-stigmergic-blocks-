@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yating/Workspace/stigmergic-block-firmware/firmware/src
+CMAKE_SOURCE_DIR = /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yating/Workspace/stigmergic-block-firmware/firmware/build
+CMAKE_BINARY_DIR = /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build
 
 #=============================================================================
 # Target rules for target CMakeFiles/hex.dir
@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /home/yating/Workspace/stigmergic-block-firmware/firmware/bui
 CMakeFiles/hex.dir/all: CMakeFiles/strip.dir/all
 	$(MAKE) -f CMakeFiles/hex.dir/build.make CMakeFiles/hex.dir/depend
 	$(MAKE) -f CMakeFiles/hex.dir/build.make CMakeFiles/hex.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles --progress-num= "Built target hex"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles --progress-num= "Built target hex"
 .PHONY : CMakeFiles/hex.dir/all
 
 # Include target in all.
@@ -76,9 +76,9 @@ all: CMakeFiles/hex.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/hex.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 14
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/hex.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 0
 .PHONY : CMakeFiles/hex.dir/rule
 
 # Convenience name for target.
@@ -103,14 +103,14 @@ clean: CMakeFiles/hex.dir/clean
 CMakeFiles/eeprom.dir/all: CMakeFiles/strip.dir/all
 	$(MAKE) -f CMakeFiles/eeprom.dir/build.make CMakeFiles/eeprom.dir/depend
 	$(MAKE) -f CMakeFiles/eeprom.dir/build.make CMakeFiles/eeprom.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles --progress-num= "Built target eeprom"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles --progress-num= "Built target eeprom"
 .PHONY : CMakeFiles/eeprom.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/eeprom.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 14
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/eeprom.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 0
 .PHONY : CMakeFiles/eeprom.dir/rule
 
 # Convenience name for target.
@@ -135,7 +135,7 @@ clean: CMakeFiles/eeprom.dir/clean
 CMakeFiles/firmware.dir/all:
 	$(MAKE) -f CMakeFiles/firmware.dir/build.make CMakeFiles/firmware.dir/depend
 	$(MAKE) -f CMakeFiles/firmware.dir/build.make CMakeFiles/firmware.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14 "Built target firmware"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14 "Built target firmware"
 .PHONY : CMakeFiles/firmware.dir/all
 
 # Include target in all.
@@ -145,9 +145,9 @@ all: CMakeFiles/firmware.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/firmware.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 14
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/firmware.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 0
 .PHONY : CMakeFiles/firmware.dir/rule
 
 # Convenience name for target.
@@ -172,7 +172,7 @@ clean: CMakeFiles/firmware.dir/clean
 CMakeFiles/strip.dir/all: CMakeFiles/firmware.dir/all
 	$(MAKE) -f CMakeFiles/strip.dir/build.make CMakeFiles/strip.dir/depend
 	$(MAKE) -f CMakeFiles/strip.dir/build.make CMakeFiles/strip.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles --progress-num= "Built target strip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles --progress-num= "Built target strip"
 .PHONY : CMakeFiles/strip.dir/all
 
 # Include target in all.
@@ -182,9 +182,9 @@ all: CMakeFiles/strip.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/strip.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 14
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/strip.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles 0
 .PHONY : CMakeFiles/strip.dir/rule
 
 # Convenience name for target.

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yating/Workspace/stigmergic-block-firmware/firmware/src
+CMAKE_SOURCE_DIR = /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yating/Workspace/stigmergic-block-firmware/firmware/build
+CMAKE_BINARY_DIR = /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build
 
 # Utility rule file for hex.
 
@@ -71,6 +71,6 @@ CMakeFiles/hex.dir/clean:
 .PHONY : CMakeFiles/hex.dir/clean
 
 CMakeFiles/hex.dir/depend:
-	cd /home/yating/Workspace/stigmergic-block-firmware/firmware/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yating/Workspace/stigmergic-block-firmware/firmware/src /home/yating/Workspace/stigmergic-block-firmware/firmware/src /home/yating/Workspace/stigmergic-block-firmware/firmware/build /home/yating/Workspace/stigmergic-block-firmware/firmware/build /home/yating/Workspace/stigmergic-block-firmware/firmware/build/CMakeFiles/hex.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/src /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/src /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build /home/ulb/Workspace/guided-construction-by-stigmergic-blocks-/firmware/build/CMakeFiles/hex.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/hex.dir/depend
 

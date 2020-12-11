@@ -54,7 +54,7 @@ void SetAllModesOnFace(CLEDController::EMode e_mode){
 }
 /***********************************************************/
 /***********************************************************/
-void LightenOnFace(uint8_t un_FaceNum){
+void LightenPinkOnFace(uint8_t un_FaceNum){
    CPortController::EPort eFace = CPortController::EPort(un_FaceNum);
    if(eFace!=CPortController::EPort::Disconnect){
       CPortController::GetInstance().Select(eFace);
@@ -63,11 +63,20 @@ void LightenOnFace(uint8_t un_FaceNum){
 }
 /***********************************************************/
 /***********************************************************/
+void LightenRedOnFace(uint8_t un_FaceNum){
+   CPortController::EPort eFace = CPortController::EPort(un_FaceNum);
+   if(eFace!=CPortController::EPort::Disconnect){
+      CPortController::GetInstance().Select(eFace);
+     SetAllColorsOnFace(0x05,0x01,0x00);/*Red*/
+   }
+}
+/***********************************************************/
+/***********************************************************/
 void LightenBlueOnFace(uint8_t un_FaceNum){
    CPortController::EPort eFace = CPortController::EPort(un_FaceNum);
    if(eFace!=CPortController::EPort::Disconnect){
       CPortController::GetInstance().Select(eFace);
-      SetAllColorsOnFace(0x05,0x01,0x00);/*Blue*/
+     SetAllColorsOnFace(0x00,0x03,0x03);/*Blue*/
    }
 }
 /***********************************************************/
@@ -367,7 +376,9 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       for(SFace& s_face : Faces) {
          CPortController::GetInstance().Select(s_face.Controller.Port);
          SetAllModesOnFace(CLEDController::EMode::PWM);
-         SetAllColorsOnFace(0x00,0x03,0x03);/*Green*/
+         //SetAllColorsOnFace(0x00,0x00,0x00);/*Black*/
+         //SetAllColorsOnFace(0x00,0x03,0x03);/*Blue*/
+         SetAllColorsOnFace(0x03,0x00,0x03);  /*Pink*/
       } 
    }
    /***********************************************************/
@@ -480,7 +491,10 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                }  
             }
             un_pStart=un_pStart+un_ChildOfChild; 
-            LightenOnFace(un_DirectedFaces[un_BitIndex]);             //Converted from Left/Front to North;  
+            LightenPinkOnFace(un_DirectedFaces[un_BitIndex]);             //Converted from Left/Front to North;  
+         }
+         else{
+            LightenBlueOnFace(un_DirectedFaces[un_BitIndex]); 
          }
       }
    }
@@ -499,7 +513,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       return un_NumTreeInfo;
    }
    /************************************************************/
-   void UpdateRootedTree(uint8_t* un_RootedTree, uint8_t un_NumChildInfo){
+   uint8_t UpdateRootedTree(uint8_t* un_RootedTree, uint8_t un_NumChildInfo){
       uint8_t un_OriginRootedTree[5]={15,0,0,0,0}; 
       uint8_t un_UpdatedRootedTree[9]={15,2,0,2,0,2,0,2,0};
 
@@ -518,16 +532,15 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
       for(uint8_t un_ChildStateIndex = 0; un_ChildStateIndex < un_TreeLength; un_ChildStateIndex++ ){
          un_RootedTree[un_ChildStateIndex] = *un_pChildIndex++;
       }
+      return un_TreeLength;
    }
    /************************************************************/
    /*****************Post-Order*********************************/
    void CountArmLength(uint8_t* un_ArmLength){
       uint8_t un_FaceIndex = 0;
-      uint8_t un_SumofChildren = 0;
       for(SFace& s_face : Faces){  //N,E,S,W,T,B;
          un_FaceIndex = static_cast<uint8_t>(s_face.Controller.Port);
          un_ArmLength[un_FaceIndex] = s_face.RxInitiatorFunctor.un_NumTreeInfo;
-         un_SumofChildren = un_SumofChildren + 1;//un_ArmLength[un_FaceIndex]；
       }
       
    }
@@ -540,6 +553,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
    uint32_t LastQuerystamp= 0;
    uint32_t LastResponsestamp= 0;
    bool IsRoot = false;
+   //bool IsRoot = true;
    EBlockState m_eBlockState=EBlockState::Idle;
 
    uint8_t un_TopFaceIndex=8;
@@ -561,10 +575,10 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
             if(IsRoot){
                un_ParentFace=static_cast<uint8_t>(CPortController::EPort::West);
                //un_ParentFace = un_TopFaceIndex;
-               UpdateRootedTree(un_RootedTree, un_NumChildInfo);
+               //un_NumTreeInfo = UpdateRootedTree(un_RootedTree, un_NumChildInfo);
                //un_NumTreeInfo = sizeof(un_RootedTree);
                SetDirectedFaces(un_ParentFace,un_TopFaceIndex);
-               DecomposeRootedTree(un_RootedTree,un_NumTreeInfo); //only root block apply rooted tree;
+               //DecomposeRootedTree(un_RootedTree,un_NumTreeInfo); //only root block apply rooted tree;
                m_eBlockState = EBlockState::Query; 
             }
             else{
@@ -572,8 +586,6 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                   if(s_face.RxTargetFunctor.IsParent){
                      un_ParentFace=static_cast<uint8_t>(s_face.Controller.Port);
                      SetDirectedFaces(un_ParentFace,un_TopFaceIndex);
-                     un_NumTreeInfo = PackResChildInfo(un_ResBlockNodeBuffer);//store command in un_ResBlockNodeBuffer;
-                     DecomposeRootedTree(un_ResBlockNodeBuffer,un_NumTreeInfo);
                      m_eBlockState = EBlockState::Query;
                   }
                }
@@ -581,6 +593,8 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
             break;
          case EBlockState::Query:
             if(!IsRoot){
+               un_NumTreeInfo = PackResChildInfo(un_ResBlockNodeBuffer);//store info from parent face to outside buffer un_ResBlockNodeBuffer;
+               DecomposeRootedTree(un_ResBlockNodeBuffer,un_NumTreeInfo);
                for(SFace& s_face : Faces){
                   if(!s_face.RxTargetFunctor.IsParent){
                      s_face.TxInitiatorFunctor.Message='Q';
@@ -589,31 +603,33 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                }
             }
             else{
+               un_NumTreeInfo = UpdateRootedTree(un_RootedTree, un_NumChildInfo);
+               DecomposeRootedTree(un_RootedTree,un_NumTreeInfo); //only root block apply rooted tree;
                for(SFace& s_face : Faces){
-                  if(CPortController::PortToChar(s_face.Controller.Port) != 'T'){      //suppose top face is the parent face of root block
+                  if(CPortController::PortToChar(s_face.Controller.Port) != 'B'){      //suppose bottom face is the parent face of root block
                      s_face.TxInitiatorFunctor.Message='Q';
                      s_face.Controller.NFC.SetInitiatorPolicy(CNFCController::EInitiatorPolicy::Once);
                   }
                }
             }
+
             un_NumChildInfo = PackResBlockInfo(un_TxBlockNodeBuffer);//send state from un_TxBlockNodeBuffer;
 
             if(IsRoot){
-               if(un_NumChildInfo==un_NumTreeInfo){
+               if(un_NumChildInfo == un_NumTreeInfo){
                   for(uint8_t un_TreeIndex=0;un_TreeIndex<un_NumTreeInfo;un_TreeIndex++){
                      IsCompleted = IsCompleted && (un_RootedTree[un_TreeIndex] == un_TxBlockNodeBuffer[un_NumChildInfo-un_TreeIndex-1]);
                   }
                   if(IsCompleted){
                      for(SFace& s_face : Faces){ 
-                        LightenBlueOnFace(static_cast<uint8_t>(s_face.Controller.Port));
+                        LightenRedOnFace(static_cast<uint8_t>(s_face.Controller.Port));
                      }
-						   m_eBlockState = EBlockState::Idle;
-					   }
-                     //CountArmLength(un_ArmLength);
-                     // m_eBlockState=EBlockState::Idle;
-                     //Reset(); //only reset parent face Info; 
+					   }   
                }
             }
+            // CountArmLength(un_ArmLength);
+            // m_eBlockState = EBlockState::Idle;
+            //Reset(); //only reset parent face Info; 
             break;
          default:
             break;
@@ -649,7 +665,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
             case '1':
                CHUARTController::GetInstance().Print(FONT_BOLD "[%05lu] ", un_timestamp);
                for(SFace& s_face : Faces) {
-                  CHUARTController::GetInstance().Print(FONT_BOLD "%d ",s_face.RxInitiatorFunctor.un_ChildConnected);
+                  CHUARTController::GetInstance().Print(FONT_BOLD "%d",s_face.RxInitiatorFunctor.un_ChildConnected);
                }
                CHUARTController::GetInstance().Print(FONT_NORMAL "\r\n");
                break;
@@ -672,7 +688,7 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                CHUARTController::GetInstance().Print(FONT_NORMAL "\r\n");
                break;
             case '5':
-                for(SFace& s_face : Faces) {
+               for(SFace& s_face : Faces) {
                   char pchBuffer[10];
                   snprintf(pchBuffer, sizeof pchBuffer,"%d",static_cast<uint8_t>(s_face.Controller.NFC.m_eInitiatorPolicy));
                   CHUARTController::GetInstance().Print("%c: %5s ", CPortController::PortToChar(s_face.Controller.Port), pchBuffer);           
@@ -689,7 +705,19 @@ struct SMyUserFunctor : CTaskScheduler::SUserFunctor {
                break;
             case '7':
                for(uint8_t un_FaceIndex=0;un_FaceIndex<6;un_FaceIndex++){
-                  CHUARTController::GetInstance().Print(FONT_BOLD "%s: %d ",'L', un_ArmLength[un_FaceIndex]);
+                  CHUARTController::GetInstance().Print(FONT_BOLD "%d ", un_ArmLength[un_FaceIndex]);
+               }
+               CHUARTController::GetInstance().Print(FONT_NORMAL "\r\n");
+               break;
+            case '8':
+               CHUARTController::GetInstance().Print(FONT_BOLD "%d: %d: %d", un_NumChildInfo, un_NumTreeInfo, sizeof(un_RootedTree));  
+               CHUARTController::GetInstance().Print(FONT_NORMAL "\r\n");   
+               IsRoot=true;
+               break;
+            case '9':
+               CHUARTController::GetInstance().Print(FONT_BOLD "[%05lu] ", un_timestamp);
+               for(SFace& s_face : Faces) {
+                  CHUARTController::GetInstance().Print(FONT_BOLD "%d ", s_face.RxInitiatorFunctor.un_NumTreeInfo);
                }
                CHUARTController::GetInstance().Print(FONT_NORMAL "\r\n");
                break;
